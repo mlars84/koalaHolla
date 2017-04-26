@@ -55,7 +55,7 @@ app.get( '/getKoalas', function (req, res) {
       var resultSet = connection.query( "SELECT * FROM koalas" );
       resultSet.on( 'row', function( row ) {
         koalasArray.push( row );
-      }); // end on row 
+      }); // end on row
       resultSet.on('end', function() {
         done();
         res.send( koalasArray );
@@ -63,3 +63,20 @@ app.get( '/getKoalas', function (req, res) {
     } // end no error
   }); // end pool.connect
 }); // end /getKoalas
+
+app.post( '/addKoala' , function (req, res) {
+  // console.log('addKoala hit with ', req);
+  // console.log('req.body ', req.body);
+  pool.connect(function( err, connection, done ){
+    if (err){
+      console.log(err);
+      res.sendStatus( 400 );
+    }
+    else{
+      console.log('connect to DB');
+      connection.query( "INSERT INTO koalas ( name, age, sex, ready_for_transfer, notes ) VALUES ( " + req.body.name + " , " + req.body.age + " , " + req.body.sex + " , " + req.body.ready_for_transfer + " , " + req.body.notes + ");" );
+      done();
+      res.sendStatus(200);
+    } // end no error
+  }); // end pool.connect
+}); // end /addKoala POST
