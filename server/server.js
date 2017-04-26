@@ -74,7 +74,8 @@ app.post( '/addKoala' , function (req, res) {
     }
     else{
       console.log('connect to DB');
-      connection.query( "INSERT INTO koalas ( name, age, sex, ready_for_transfer, notes ) VALUES ( " + req.body.name + " , " + req.body.age + " , " + req.body.sex + " , " + req.body.ready_for_transfer + " , " + req.body.notes + ");" );
+      console.log( "INSERT INTO koalas ( name, age, sex, ready_for_transfer, notes ) VALUES ( '" + req.body.name + "' , " + req.body.age + " , '" + req.body.sex + "' , '" + req.body.ready_for_transfer + "' , '" + req.body.notes + "');" );
+      connection.query("INSERT INTO koalas ( name, age, sex, ready_for_transfer, notes ) VALUES ( '" + req.body.name + "' , " + req.body.age + " , '" + req.body.sex + "' , '" + req.body.ready_for_transfer + "' , '" + req.body.notes + "');" );
       done();
       res.sendStatus(200);
     } // end no error
