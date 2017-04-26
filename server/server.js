@@ -6,6 +6,17 @@ var bodyParser = require('body-parser');
 var port = 6789;
 var pg = require('pg');
 
+// set up config for the pool
+var config = {
+  database: 'koala_holla',
+  host: 'localhost',
+  port: 5432,
+  max: 10
+};
+
+// new pool using config ^
+var pool = new pg.Pool( config );
+
 // uses
 app.use(express.static('public'));
 app.use(bodyParser.urlencoded({extended: true}));
@@ -21,8 +32,34 @@ app.get( '/', function (req, res) {
   res.sendFile( path.resolve( 'public/views/index.html' ) );
 });
 
+
+var koalasArray = [];
+
+// function to call database and gather all koalas
+function extractKoalas() {
+
+}
+
+
+
 app.get( '/getKoalas', function (req, res) {
   console.log(' /getKoalas get hit ');
   //add database call here
-  res.sendStatus(200);
-});
+  pool.connect(function( err, connection, done ){
+    if (err){
+      console.log(err);
+      res.sendStatus( 400 );
+    }
+    else{
+      console.log('connect to DB');
+      var resultSet = connection.query( "SELECT * FROM koalas" );
+      resultSet.on( 'row', function( row ) {
+        koalasArray.push( row );
+      }); // end on row 
+      resultSet.on('end', function() {
+        done();
+        res.send( koalasArray );
+      }); // end on end
+    } // end no error
+  }); // end pool.connect
+}); // end /getKoalas
