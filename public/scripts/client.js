@@ -4,6 +4,7 @@ function onReady () {
   // console.log( 'JQ' );
   $('#addButton').on('click', addKoala );
   getKoalas();
+  koalaDropdown();
 }
 
 // get all koalas from the database and display
@@ -44,3 +45,26 @@ function addKoala () {
     } // end success
   }); // end ajax POST addKoala
 } // end addKoala
+
+function koalaDropdown() {
+  //GET
+  $.ajax({
+    url: '/getKoalas',
+    type: 'GET',
+    success: function( response ) {
+      $('#koalaDropdown').empty();
+      $('#koalaDropdown').append( '<option value="empty">Select a Koala</option>' );
+      for (var i = 0; i < response.length; i++) {
+        $( '#koalaDropdown' ).append('<option value="' + response[i].name + '">' + response[i].name + '</option>');
+      }
+    }
+  });
+}
+
+function editKoala() {
+  // POST
+}
+
+function deleteKoala() {
+  //POST
+}

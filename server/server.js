@@ -8,7 +8,7 @@ var pg = require('pg');
 
 // set up config for the pool
 var config = {
-  database: 'koala_holla',
+  database: 'koalaHolla',
   host: 'localhost',
   port: 5432,
   max: 10
@@ -35,16 +35,10 @@ app.get( '/', function (req, res) {
 
 var koalasArray = [];
 
-// function to call database and gather all koalas
-function extractKoalas() {
-
-}
-
-
-
-app.get( '/getKoalas', function (req, res) {
+app.get( '/getKoalas', function ( req, res ) {
   console.log(' /getKoalas get hit ');
   //add database call here
+  koalasArray = [];
   pool.connect(function( err, connection, done ){
     if (err){
       console.log(err);
@@ -75,7 +69,10 @@ app.post( '/addKoala' , function (req, res) {
     else{
       console.log('connect to DB');
       console.log( "INSERT INTO koalas ( name, age, sex, ready_for_transfer, notes ) VALUES ( '" + req.body.name + "' , " + req.body.age + " , '" + req.body.sex + "' , '" + req.body.ready_for_transfer + "' , '" + req.body.notes + "');" );
-      connection.query("INSERT INTO koalas ( name, age, sex, ready_for_transfer, notes ) VALUES ( '" + req.body.name + "' , " + req.body.age + " , '" + req.body.sex + "' , '" + req.body.ready_for_transfer + "' , '" + req.body.notes + "');" );
+      // connection.query("INSERT INTO koalas ( name, age, sex, ready_for_transfer, notes ) VALUES ( '" + req.body.name + "' , " + req.body.age + " , '" + req.body.sex + "' , '" + req.body.ready_for_transfer + "' , '" + req.body.notes + "');" );
+
+      // connection using parameterization
+      connection.query("INSERT INTO koalas (name, age, sex, ready_for_transfer, notes) VALUES ($1, $2, $3, $4, $5)", [req.body.name, req.body.age, req.body.sex, req.body.ready_for_transfer, req.body.notes]);
       done();
       res.sendStatus(200);
     } // end no error
