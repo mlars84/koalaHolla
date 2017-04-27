@@ -78,3 +78,35 @@ app.post( '/addKoala' , function (req, res) {
     } // end no error
   }); // end pool.connect
 }); // end /addKoala POST
+
+app.post('/editKoala', function( req, res ) {
+  pool.connect(function( err, connection, done ){
+    if (err){
+      console.log(err);
+      res.sendStatus( 400 );
+    }
+    else{
+      console.log('connect to DB for edit');
+      // connection using parameterization
+      connection.query("UPDATE koalas SET name=$1, age=$2, sex=$3, ready_for_transfer=$4, notes=$5 WHERE name=$1" , [req.body.name, req.body.age, req.body.sex, req.body.ready_for_transfer, req.body.notes]);
+      done();
+      res.sendStatus(200);
+    } // end no error
+  }); // end pool.connect
+}); // end /editKoala POST
+
+app.post( '/deleteKoala', function( req, res ) {
+  pool.connect(function( err, connection, done ){
+    if ( err ){
+      console.log( err );
+      res.sendStatus( 400 );
+    }
+    else{
+      console.log( 'connect to DB for delete' );
+      // connection using parameterization
+      connection.query( "DELETE FROM koalas WHERE name=$1" , [req.body.selectedDropdown] );
+      done();
+      res.sendStatus( 200 );
+    } // end no error
+  }); // end pool.connect
+}); // end /deleteKoala POST

@@ -5,7 +5,11 @@ function onReady () {
   $('#addButton').on('click', addKoala );
   getKoalas();
   koalaDropdown();
-}
+  // on dropdown change, run fillInputFields function, which adds selected koala info
+  $( '#koalaDropdown' ).change( fillInputFields );
+  $('#editButton').on( 'click', editKoala );
+  $('#deleteButton').on( 'click', deleteKoala );
+} // end onReady
 
 // get all koalas from the database and display
 function getKoalas(){
@@ -42,9 +46,19 @@ function addKoala () {
     data: objectToSend,
     success: function ( response ) {
       getKoalas();
+      koalaDropdown();
+      clearAddInputFields();
     } // end success
   }); // end ajax POST addKoala
 } // end addKoala
+
+function clearAddInputFields() {
+  $('#nameIn').val('');
+  $('#ageIn').val('');
+  $('#sexIn').val('');
+  $('#readyForTransferIn').val('');
+  $('#notesIn').val('');
+}
 
 function koalaDropdown() {
   //GET
@@ -59,12 +73,73 @@ function koalaDropdown() {
       }
     }
   });
-}
+} // end koalaDropdown
+
+function fillInputFields() {
+  console.log('input field changed');
+  $.ajax({
+    url: '/getKoalas',
+    type: 'GET',
+    success: function( response ) {
+      for (var i = 0; i < response.length; i++) {
+        if( $('#koalaDropdown').val() === response[i].name ){
+          $( '#nameEditIn' ).val( response[i].name );
+          $( '#ageEditIn' ).val( response[i].age );
+          $( '#sexEditIn' ).val( response[i].sex );
+          $( '#readyForTransferEditIn' ).val( response[i].ready_for_transfer );
+          $( '#notesEditIn' ).val( response[i].notes );
+        } // end of if
+      } // end of for
+    } // end success
+  }); // end ajax
+} // end fillInputFields
 
 function editKoala() {
+
+  var objectToEdit = {
+    name: $('#nameEditIn').val(),
+    age: $('#ageEditIn').val(),
+    sex: $('#sexEditIn').val(),
+    ready_for_transfer: $('#readyForTransferEditIn').val(),
+    notes: $('#notesEditIn').val()
+  };
+
   // POST
+  $.ajax({
+    url: '/editKoala',
+    type: 'POST',
+    data: objectToEdit,
+    success: function( response ) {
+      console.log( response );
+      getKoalas();
+      koalaDropdown();
+      clearEditInputFields();
+    }
+  }); // end ajax
+} // end editKoala
+
+function clearEditInputFields() {
+  $('#nameEditIn').val('');
+  $('#ageEditIn').val('');
+  $('#sexEditIn').val('');
+  $('#readyForTransferEditIn').val('');
+  $('#notesEditIn').val('');
 }
 
-function deleteKoala() {
+function deleteKoala(  ) {
+  var objectToRemove = {
+    selectedDropdown: $('#koalaDropdown').val(),
+  };
   //POST
-}
+  $.ajax({
+    url: '/deleteKoala',
+    type: 'POST',
+    data: objectToRemove,
+    success: function ( response ) {
+      console.log( response );
+      getKoalas();
+      koalaDropdown();
+      clearEditInputFields();
+    }
+  });
+} // end deleteKoala
