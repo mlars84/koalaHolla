@@ -1,21 +1,46 @@
 // requires
-var express = require('express');
-var app = express();
-var path = require('path');
-var bodyParser = require('body-parser');
-var port = 6789;
-var pg = require('pg');
+const express = require('express');
+const app = express();
+const path = require('path');
+const bodyParser = require('body-parser');
+const port = 6789;
+const pg = require('pg');
+const Sequelize = require('sequelize');
+
+const pool = new pg.Pool( config );
+
+// setting up a sequelize connection
+const sequelize = new Sequelize('koalaHolla', 'matthewlarson', 'wisconsin3', {
+  host: 'localhost',
+  dialect: 'postgres',
+
+  pool: {
+    max: 10,
+    min: 0,
+    idle: 10000
+  },
+});
+
+// testing the connection
+sequelize
+  .authenticate()
+  .then(() => {
+    console.log('Connection has been established successfully.');
+  })
+  .catch(err => {
+    console.error('Unable to connect to the database:', err);
+  });
 
 // set up config for the pool
-var config = {
-  database: 'koalaHolla',
-  host: 'localhost',
-  port: 5432,
-  max: 10
-};
+// const config = {
+//   database: 'koalaHolla',
+//   host: 'localhost',
+//   port: 5432,
+//   max: 10
+// };
 
 // new pool using config ^
-var pool = new pg.Pool( config );
+// const pool = new pg.Pool( config );
 
 // uses
 app.use(express.static('public'));
@@ -33,7 +58,7 @@ app.get( '/', function (req, res) {
 });
 
 
-var koalasArray = [];
+const koalasArray = [];
 
 app.get( '/getKoalas', function ( req, res ) {
   console.log(' /getKoalas get hit ');
@@ -46,7 +71,7 @@ app.get( '/getKoalas', function ( req, res ) {
     }
     else{
       console.log('connect to DB');
-      var resultSet = connection.query( "SELECT * FROM koalas" );
+      const resultSet = connection.query( "SELECT * FROM koalas" );
       resultSet.on( 'row', function( row ) {
         koalasArray.push( row );
       }); // end on row
