@@ -1,2 +1,2 @@
+![Koala logo](public/images/koala.jpg)
 # Sequelize Koala Holla
-(/images/koala.jpg "Just a cute Koala")
